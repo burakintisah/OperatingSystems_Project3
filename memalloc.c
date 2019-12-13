@@ -26,16 +26,13 @@ int	mem_init (void	*chunkpointer,	int	chunksize,	int	method){
 	start = chunkpointer;
 	size = chunksize; 
 	end = start + (size * 1024);
-
 	((Alloc*)start)->length = 0;
 	((Alloc*)start)->next = NULL;
 	((Alloc*)start)->prev = NULL;
-
 	return	(0); //	if	success
 }
 
 void *mem_allocate(int	objectsize){
-
 	if(objectsize < size){
 		if(methd == FIRST_FIT){
 			return firstFit(objectsize);
@@ -51,7 +48,6 @@ void *mem_allocate(int	objectsize){
 	return	(NULL); //	if	not	success
 }
 
-
 void mem_free(void	*objectptr){
 	Alloc * to_delete = (Alloc *) objectptr - allocSize;
 	to_delete->prev->next = to_delete->next;
@@ -62,34 +58,31 @@ void mem_free(void	*objectptr){
 void mem_print(void){
 	printf("print	called\n");
 	int empty_space;
-	int start_of_empty_space;
 	Alloc* temp = (Alloc*) start;
 	if(temp == NULL){
 		printf("No Chunk provided!");
 	}
 	while(temp->next != NULL){
-		empty_space = (temp->next) - (temp->length + allocSize + temp);
-		start_of_empty_space = temp + temp->length + allocSize;
+		empty_space = (char*)(temp->next) - (temp->length + allocSize + (char*)temp);
 		if(temp->length != 0){
-			printf("Start of occupied address : %d", temp + allocSize);
-			printf("Size of occupied address : %d", temp->length);
+			printf("Start of occupied address : %lx\n", (unsigned long)((char*)temp + allocSize));
+			printf("Size of occupied address : %n\n", temp->length);
 		}
 		if(empty_space != 0){
-			printf("Start of empty address : %d", start_of_empty_space);
-			printf("Size of empty address : %d", empty_space);
+			printf("Start of empty address : %lx\n", (unsigned long)((char*)temp + temp->length + allocSize));
+			printf("Size of empty address : %d\n", empty_space);
 		}
 		temp = temp->next;
 	}
 	if(temp->next == NULL){
-		empty_space = (Alloc*)(end) - (temp->length + allocSize + temp);
-		start_of_empty_space = temp + temp->length + allocSize;
+		empty_space = (char*)(end) - (temp->length + allocSize + (char*)temp);
 		if(temp->length != 0){
-			printf("Start of occupied address : %d", temp + allocSize);
-			printf("Size of occupied address : %d", temp->length);
+			printf("Start of occupied address : %lx\n", (unsigned long)((char*)temp + allocSize));
+			printf("Size of occupied address : %d\n", temp->length);
 		}
 		if(empty_space != 0){
-			printf("Start of empty address : %d", start_of_empty_space);
-			printf("Size of empty address : %d", empty_space);
+			printf("Start of empty address : %lx\n", (char*)temp + temp->length + allocSize);
+			printf("Size of empty address : %d\n", empty_space);
 		}
 	}
 	return;
@@ -100,8 +93,8 @@ void* firstFit(int osize){
 	Alloc* temp2;
 	while(temp->next != NULL){
 		temp2 = temp->next;
-		Alloc * place_next = temp->next;
-		Alloc * place = temp;
+		char * place_next = (char *)temp->next;
+		char * place = (char *)temp;
 		if(place_next - (place + allocSize + temp->length) >= osize){
 			temp->next = (Alloc*) (place + temp->length + allocSize);
 			temp->next->length = osize;
@@ -112,8 +105,8 @@ void* firstFit(int osize){
 		}
 		temp = temp->next;
 	}
-	if(temp->next == NULL && osize + allocSize <= (Alloc *)end - temp->length + allocSize){
-		Alloc * place = temp;
+	if(temp->next == NULL && osize + allocSize <= (char *)end - temp->length + allocSize){
+		char * place = (char *)temp;
 		temp->next = (Alloc*) (place + temp->length + allocSize);
 		temp->next->length = osize;
 		temp->next->next = NULL;
@@ -129,8 +122,8 @@ void* bestFit(int osize){
 	Alloc* min = NULL;
 	Alloc* temp = (Alloc*)start;
 	while(temp->next != NULL){
-		Alloc * place_next = (temp->next);
-		Alloc * place = (temp);
+		char * place_next = (temp->next);
+		char * place = (temp);
 		space = place_next - (place + allocSize + temp->length);
 		if(space >= osize){
 			if(space<minValue){
@@ -141,9 +134,9 @@ void* bestFit(int osize){
 		temp = temp->next;
 	}
 
-	if(temp->next == NULL && osize + allocSize <= (Alloc *)end - temp->length + allocSize){
-		Alloc * place = (temp);
-		space = (Alloc *)end - (place + allocSize + temp->length);
+	if(temp->next == NULL && osize + allocSize <= (char *)end - temp->length + allocSize){
+		char * place = (temp);
+		space = (char *)end - (place + allocSize + temp->length);
 		if(space >= osize){
 			if(space<minValue){
 				minValue = space;
@@ -155,7 +148,7 @@ void* bestFit(int osize){
 		return NULL;
 	}
 	Alloc * temp2 = min->next;
-	Alloc * place = (min);
+	char * place = (min);
 	min->next = (Alloc*) (place + min->length + allocSize);
 	min->next->length = osize;
 	min->next->next = temp2;

@@ -20,7 +20,7 @@ int	main(int	argc,	char	*argv[]){
 	size	=	atoi(argv[1]);			//	unit	is	in	KB
 	//	allocate	a	chunk	
 	chunkptr	=	sbrk(0);	//	end	of	data	segment
-	sbrk (size	*	1024);	//	extend	data	segment	by	indicated	amount	(bytes)
+	sbrk (size * 1024);	//	extend	data	segment	by	indicated	amount	(bytes)
 	endptr	=	sbrk(0); //	new	end	of	data	segment
 
 	printf("chunkstart=%lx,	chunkend=%lx,	chunksize=%lu	bytes\n",
@@ -31,19 +31,28 @@ int	main(int	argc,	char	*argv[]){
 	charptr	=	(char	*)chunkptr;
 	for	(i	=	0;	i	<	size;	++i)
 		charptr[i]	=	0;
-		printf("---chunk	test	ended	- success\n");
-		ret	=	mem_init(chunkptr,	size,	0,	FIRST_FIT);
-		if	(ret	==	-1)	{
+	printf("---chunk	test	ended	- success\n");
+	ret	= mem_init(chunkptr,	size, FIRST_FIT);
+	printf("SASASAASAAS\n");
+	printf("!!!!!!!!!!!!!!!!!!!alksdjkajldskldsajlkdsa\n");
+	if	(ret	==	-1)	{
 		printf("could	not	initialize	\n");
 		exit(1);
 	}
+	
 
 	//	below	we	allocate	and	deallocate	memory	dynamically
 	x1	=	mem_allocate(600);
+	mem_print();
 	x2	=	mem_allocate(4500);
 	x3	=	mem_allocate(1300);
+	mem_print();
+	printf("YOK ARTIK\n");
 	mem_free(x1);
-	mem_free(x2);
-	mem_free(x3);
+	printf("YOK ARTIK1\n");
+	// mem_free(x2);
+	// printf("YOK ARTIK2\n");
+	// mem_free(x3);
+	// printf("YOK ARTIK3\n");
 	return	0;
 }
