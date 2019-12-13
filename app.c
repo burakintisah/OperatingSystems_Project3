@@ -20,7 +20,7 @@ int	main(int	argc,	char	*argv[]){
 	size	=	atoi(argv[1]);			//	unit	is	in	KB
 	//	allocate	a	chunk	
 	chunkptr	=	sbrk(0);	//	end	of	data	segment
-	sbrk(size	*	1024);	//	extend	data	segment	by	indicated	amount	(bytes)
+	sbrk (size	*	1024);	//	extend	data	segment	by	indicated	amount	(bytes)
 	endptr	=	sbrk(0); //	new	end	of	data	segment
 
 	printf("chunkstart=%lx,	chunkend=%lx,	chunksize=%lu	bytes\n",
@@ -37,7 +37,7 @@ int	main(int	argc,	char	*argv[]){
 		printf("could	not	initialize	\n");
 		exit(1);
 	}
-	
+
 	//	below	we	allocate	and	deallocate	memory	dynamically
 	x1	=	mem_allocate(600);
 	x2	=	mem_allocate(4500);

@@ -25,7 +25,7 @@ int	mem_init (void	*chunkpointer,	int	chunksize,	int	method){
 	methd = method; 
 	start = chunkpointer;
 	size = chunksize; 
-	end = chunkpointer + size * 1024;
+	end = start + (size * 1024);
 
 	((Alloc*)start)->length = 0;
 	((Alloc*)start)->next = NULL;
@@ -100,8 +100,8 @@ void* firstFit(int osize){
 	Alloc* temp2;
 	while(temp->next != NULL){
 		temp2 = temp->next;
-		(Alloc *) place_next = temp->next;
-		(Alloc *) place = temp;
+		Alloc * place_next = temp->next;
+		Alloc * place = temp;
 		if(place_next - (place + allocSize + temp->length) >= osize){
 			temp->next = (Alloc*) (place + temp->length + allocSize);
 			temp->next->length = osize;
@@ -112,7 +112,7 @@ void* firstFit(int osize){
 		}
 		temp = temp->next;
 	}
-	if(temp->next == NULL && osize + allocSize <= end - temp->length + allocSize){
+	if(temp->next == NULL && osize + allocSize <= (Alloc *)end - temp->length + allocSize){
 		Alloc * place = temp;
 		temp->next = (Alloc*) (place + temp->length + allocSize);
 		temp->next->length = osize;
@@ -141,9 +141,9 @@ void* bestFit(int osize){
 		temp = temp->next;
 	}
 
-	if(temp->next == NULL && osize + allocSize <= end - temp->length + allocSize){
+	if(temp->next == NULL && osize + allocSize <= (Alloc *)end - temp->length + allocSize){
 		Alloc * place = (temp);
-		space = end - (place + allocSize + temp->length);
+		space = (Alloc *)end - (place + allocSize + temp->length);
 		if(space >= osize){
 			if(space<minValue){
 				minValue = space;
@@ -184,9 +184,9 @@ void* worstFit(int osize){
 		temp = temp->next;
 	}
 
-	if(temp->next == NULL && osize + allocSize <= end - temp->length + allocSize){
+	if(temp->next == NULL && osize + allocSize <= (Alloc *)end - temp->length + allocSize){
 		Alloc * place = (temp);
-		space = end - (place + allocSize + temp->length);
+		space = (Alloc *)end - (place + allocSize + temp->length)  ;
 		if(space >= osize){
 			if(space>maxValue){
 				maxValue = space;
@@ -198,7 +198,7 @@ void* worstFit(int osize){
 		return NULL;
 	}
 	Alloc * temp2 = max->next;
-	Alloc * place = (max);
+	Alloc * place = max;
 	max->next = (Alloc*) (place + max->length + allocSize);
 	max->next->length = osize;
 	max->next->next = temp2;

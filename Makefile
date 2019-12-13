@@ -9,4 +9,4 @@ app:	app.c
 		gcc -Wall -o app app.c -L -lmemalloc
 
 clean: 
-		rm -fr *.o *.a~a.out app
+		rm -fr *.o *.a ~a.out app
