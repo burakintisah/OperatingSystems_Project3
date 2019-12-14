@@ -10,7 +10,8 @@ int	main(int	argc,	char	*argv[]){
 	int	ret;
 	int	i;
 	int	size;
-	void	*x1,	*x2,	*x3; //	object	pointers
+	void	*x1,	*x2,	*x3,  	*x4; //	object	pointers
+	void	*x5,	*x6,	*x7,  	*x8; 
 
 	if	(argc	!=	2)	{
 		printf("usage:	app	<size	in	KB>\n");
@@ -20,10 +21,10 @@ int	main(int	argc,	char	*argv[]){
 	size	=	atoi(argv[1]);			//	unit	is	in	KB
 	//	allocate	a	chunk	
 	chunkptr	=	sbrk(0);	//	end	of	data	segment
-	sbrk (size	*	1024);	//	extend	data	segment	by	indicated	amount	(bytes)
+	sbrk (size * 1024);	//	extend	data	segment	by	indicated	amount	(bytes)
 	endptr	=	sbrk(0); //	new	end	of	data	segment
 
-	printf("chunkstart=%lx,	chunkend=%lx,	chunksize=%lu	bytes\n",
+	printf("chunkstart=%d,	chunkend=%lx,	chunksize=%lu	bytes\n",
 								(unsigned	long)chunkptr,
 								(unsigned	long)endptr,	(unsigned	long)(endptr	- chunkptr));
 	//test	the	chunk	
@@ -31,19 +32,34 @@ int	main(int	argc,	char	*argv[]){
 	charptr	=	(char	*)chunkptr;
 	for	(i	=	0;	i	<	size;	++i)
 		charptr[i]	=	0;
-		printf("---chunk	test	ended	- success\n");
-		ret	=	mem_init(chunkptr,	size,	0,	FIRST_FIT);
-		if	(ret	==	-1)	{
+	printf("---chunk	test	ended	- success\n");
+
+	ret	= mem_init(chunkptr,	size, WORST_FIT);
+
+	if	(ret	==	-1)	{
 		printf("could	not	initialize	\n");
 		exit(1);
 	}
+	
 
 	//	below	we	allocate	and	deallocate	memory	dynamically
 	x1	=	mem_allocate(600);
-	x2	=	mem_allocate(4500);
-	x3	=	mem_allocate(1300);
-	mem_free(x1);
+	x2 = 	mem_allocate(200);
+	x3	=	mem_allocate(600);
+	x4	=	mem_allocate(600);
+	x5 = mem_allocate(600);
+	
+	mem_print();
 	mem_free(x2);
-	mem_free(x3);
+	mem_free(x4);
+
+	x6 = mem_allocate(100);
+
+	mem_print();
+	//mem_free(x2);
+	// mem_free(x3);
+
+	//mem_print();
+
 	return	0;
 }
