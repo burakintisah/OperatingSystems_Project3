@@ -4,7 +4,7 @@
 int	mem_init(void* ,int,	int);
 void* mem_allocate(int);
 void mem_free(void	*);
-void mem_print	(void);	
+void mem_print	(void);
 void* firstFit(int);
 void* bestFit(int);
 void* worstFit(int);

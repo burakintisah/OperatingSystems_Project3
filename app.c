@@ -5,7 +5,7 @@
 #include	"memalloc.h"
 
 int	main(int	argc,	char	*argv[]){
-	
+
 	struct timeval startTime, endTime;
 	void	*chunkptr;
 	void	*endptr;
@@ -14,8 +14,8 @@ int	main(int	argc,	char	*argv[]){
 	int	i;
 	int	size;
 	void	*x1,	*x2,	*x3,  	*x4; //	object	pointers
-	void	*x5,	*x6,	*x7,  	*x8; 
-	int x_length = 1000;
+	void	*x5,	*x6,	*x7,  	*x8;
+	int x_length = 300;
 	void * x[x_length];
 
 	if	(argc	!=	2)	{
@@ -24,7 +24,7 @@ int	main(int	argc,	char	*argv[]){
 	}
 
 	size	=	atoi(argv[1]);			//	unit	is	in	KB
-	//	allocate	a	chunk	
+	//	allocate	a	chunk
 	chunkptr	=	sbrk(0);	//	end	of	data	segment
 	sbrk (size * 1024);	//	extend	data	segment	by	indicated	amount	(bytes)
 	endptr	=	sbrk(0); //	new	end	of	data	segment
@@ -32,14 +32,14 @@ int	main(int	argc,	char	*argv[]){
 	printf("chunkstart=%lx,	chunkend=%lx,	chunksize=%lu	bytes\n",
 								(unsigned	long)chunkptr,
 								(unsigned	long)endptr,	(unsigned	long)(endptr	- chunkptr));
-	//test	the	chunk	
+	//test	the	chunk
 	printf("---starting	testing	chunk\n");
 	charptr	=	(char	*)chunkptr;
 	for	(i	=	0;	i	<	size;	++i)
 		charptr[i]	=	0;
 	printf("---chunk	test	ended	- success\n");
 
-	ret	= mem_init(chunkptr,	size, WORST_FIT);
+	ret	= mem_init(chunkptr,	size, FIRST_FIT);
 
 	if	(ret	==	-1)	{
 		printf("could	not	initialize	\n");
@@ -55,22 +55,27 @@ int	main(int	argc,	char	*argv[]){
 	// x4	=	mem_allocate(12300);
 	// x5 = 	mem_allocate(1100);
 	// x6 = 	mem_allocate(1100);
-	// x7 = 	mem_allocate(1100);
-	// x8 = 	mem_allocate(1100);
-	// x9 = 	mem_allocate(1100);
-	// x5 = 	mem_allocate(1100);
-	// x5 = 	mem_allocate(1100);
+
 
 	for (int i=0; i<x_length; i++){
-		x[i] = mem_allocate(5000);
+		printf("%d\n",i );
+		if (i %2 == 0)
+			x[i] = mem_allocate(400);
+		else
+		 	x[i] = mem_allocate(i*100);
 	}
 
-	for (int i=0; i<x_length; i++){
-		mem_free(x[i]);
-	}
+	// for (int i=0; i<x_length; i++){
+	// 	if(i %2 != 0)
+	// 		mem_free(x[i]);
+	// }
+	//
+	// for (int i=0; i<x_length; i++){
+	// 	if(i %2 != 0)
+	// 		x[i] = mem_allocate(i*100);
+	// }
 
-	
-	
+
 	// mem_free(x2);
 	// mem_free(x4);
 

@@ -20,9 +20,9 @@ void* end = NULL;
 
 //	printfs	are	for	debugging;	remove	them	when	you	use/submit	your	library
 int	mem_init (void	*chunkpointer,	int	chunksize,	int	method){
-	methd = method; 
+	methd = method;
 	start = chunkpointer;
-	size = chunksize * 1024; 
+	size = chunksize * 1024;
 	end = start + (size);
 	((Alloc*)start)->length = 0;
 	((Alloc*)start)->next = NULL;
@@ -112,9 +112,10 @@ void* firstFit(int osize){
 		}
 		temp = temp->next;
 	}
-	if(temp->next == NULL && osize + allocSize <= (char *)end - (temp->length + allocSize)){
+	if(temp->next == NULL && ((osize + allocSize) <= (char *)end - ((char *)temp + temp->length + allocSize))){
 		char * place = (char *)temp;
 		temp->next = (Alloc*) (place + temp->length + allocSize);
+		printf("%d				%d\n",(osize + allocSize), (char *)end - (temp->length + allocSize));
 		temp->next->length = osize;
 		temp->next->next = NULL;
 		temp->next->prev = temp;
@@ -141,7 +142,7 @@ void* bestFit(int osize){
 		temp = temp->next;
 	}
 
-	if(temp->next == NULL && osize + allocSize <= (char *)end - (temp->length + allocSize)){
+	if(temp->next == NULL && ((osize + allocSize) <= (char *)end - ((char *)temp+temp->length + allocSize))){
 		char * place = (char *)temp;
 		space = (char *)end - (place + allocSize + temp->length);
 		if(space >= osize){
@@ -184,7 +185,7 @@ void* worstFit(int osize){
 		temp = temp->next;
 	}
 
-	if(temp->next == NULL && osize + allocSize <= (char*)end - (temp->length + allocSize)){
+	if(temp->next == NULL && osize + allocSize <= (char*)end - ((char *)temp+temp->length + allocSize)){
 		char * place = (char *)temp;
 		space = (char *)end - (place + allocSize + temp->length)  ;
 		if(space >= osize){
