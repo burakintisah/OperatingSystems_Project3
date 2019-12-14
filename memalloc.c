@@ -1,12 +1,10 @@
 #include  <stdlib.h>
 #include  <stdio.h>
 #include  <limits.h>
+#include <pthread.h>
 #include  "memalloc.h"
 
-//endlerde sorun cikabilir
-// *2lerde sorun cikabilir
-// place values 
-// start -- chunkpointer test
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct alloc{
 	int length;
@@ -33,6 +31,7 @@ int	mem_init (void	*chunkpointer,	int	chunksize,	int	method){
 }
 
 void *mem_allocate(int	objectsize){
+	pthread_mutex_lock(&mutex1);
 	if(objectsize < size){
 		if(methd == FIRST_FIT){
 			return firstFit(objectsize);
@@ -44,19 +43,25 @@ void *mem_allocate(int	objectsize){
 			return worstFit(objectsize);
 		}
 	}
-
+	pthread_mutex_unlock(&mutex1);
 	return	(NULL); //	if	not	success
 }
 
 void mem_free(void	*objectptr){
-	Alloc * to_delete = (Alloc *) objectptr - allocSize;
-	to_delete->prev->next = to_delete->next;
-	if (to_delete -> next != NULL)
-		to_delete->next->prev = to_delete->prev;
+	pthread_mutex_lock(&mutex1);
+	if(objectptr != NULL){
+		Alloc * to_delete = (Alloc *) objectptr - allocSize;
+		to_delete->prev->next = to_delete->next;
+		if (to_delete -> next != NULL)
+			to_delete->next->prev = to_delete->prev;
+	}
+	pthread_mutex_unlock(&mutex1);
+
 	return;
 }
 
 void mem_print(void){
+	pthread_mutex_lock(&mutex1);
 	printf("print	called\n");
 	int empty_space;
 	Alloc* temp = (Alloc*) start;
@@ -66,11 +71,11 @@ void mem_print(void){
 	while(temp->next != NULL){
 		empty_space = (char*)(temp->next) - (temp->length + allocSize + (char*)temp);
 		if(temp->length != 0){
-			printf("Start of occupied address : %d\n", (unsigned long)((char*)temp + allocSize));
+			printf("Start of occupied address : 0x%lx\n", (unsigned long)((char*)temp + allocSize));
 			printf("Size of occupied address : %d\n", temp->length);
 		}
 		if(empty_space != 0){
-			printf("Start of empty address : %d\n", (unsigned long)((char*)temp + temp->length + allocSize));
+			printf("Start of empty address : 0x%lx\n", (unsigned long)((char*)temp + temp->length + allocSize));
 			printf("Size of empty address : %d\n", empty_space);
 		}
 		temp = temp->next;
@@ -78,14 +83,15 @@ void mem_print(void){
 	if(temp->next == NULL){
 		empty_space = (char*)(end) - (temp->length + allocSize + (char*)temp);
 		if(temp->length != 0){
-			printf("Start of occupied address : %d\n", (unsigned long)((char*)temp + allocSize));
+			printf("Start of occupied address : 0x%lx\n", (unsigned long)((char*)temp + allocSize));
 			printf("Size of occupied address : %d\n", temp->length);
 		}
 		if(empty_space != 0){
-			printf("Start of empty address : %d\n", (char*)temp + temp->length + allocSize);
+			printf("Start of empty address : 0x%lx\n", (char*)temp + temp->length + allocSize);
 			printf("Size of empty address : %d\n", empty_space);
 		}
 	}
+	pthread_mutex_unlock(&mutex1);
 	return;
 }
 

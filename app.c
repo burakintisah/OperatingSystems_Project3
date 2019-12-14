@@ -1,9 +1,12 @@
 #include	<stdlib.h>
 #include	<stdio.h>
 #include	<unistd.h>
+#include 	<sys/time.h>
 #include	"memalloc.h"
 
 int	main(int	argc,	char	*argv[]){
+	
+	struct timeval startTime, endTime;
 	void	*chunkptr;
 	void	*endptr;
 	char	*charptr;
@@ -12,6 +15,8 @@ int	main(int	argc,	char	*argv[]){
 	int	size;
 	void	*x1,	*x2,	*x3,  	*x4; //	object	pointers
 	void	*x5,	*x6,	*x7,  	*x8; 
+	int x_length = 1000;
+	void * x[x_length];
 
 	if	(argc	!=	2)	{
 		printf("usage:	app	<size	in	KB>\n");
@@ -24,7 +29,7 @@ int	main(int	argc,	char	*argv[]){
 	sbrk (size * 1024);	//	extend	data	segment	by	indicated	amount	(bytes)
 	endptr	=	sbrk(0); //	new	end	of	data	segment
 
-	printf("chunkstart=%d,	chunkend=%lx,	chunksize=%lu	bytes\n",
+	printf("chunkstart=%lx,	chunkend=%lx,	chunksize=%lu	bytes\n",
 								(unsigned	long)chunkptr,
 								(unsigned	long)endptr,	(unsigned	long)(endptr	- chunkptr));
 	//test	the	chunk	
@@ -40,26 +45,49 @@ int	main(int	argc,	char	*argv[]){
 		printf("could	not	initialize	\n");
 		exit(1);
 	}
-	
+
 
 	//	below	we	allocate	and	deallocate	memory	dynamically
-	x1	=	mem_allocate(600);
-	x2 = 	mem_allocate(200);
-	x3	=	mem_allocate(600);
-	x4	=	mem_allocate(600);
-	x5 = mem_allocate(600);
+	gettimeofday(&startTime, NULL);
+	// x1	=	mem_allocate(1000);
+	// x2 = 	mem_allocate(400);
+	// x3	=	mem_allocate(12300);
+	// x4	=	mem_allocate(12300);
+	// x5 = 	mem_allocate(1100);
+	// x6 = 	mem_allocate(1100);
+	// x7 = 	mem_allocate(1100);
+	// x8 = 	mem_allocate(1100);
+	// x9 = 	mem_allocate(1100);
+	// x5 = 	mem_allocate(1100);
+	// x5 = 	mem_allocate(1100);
+
+	for (int i=0; i<x_length; i++){
+		x[i] = mem_allocate(5000);
+	}
+
+	for (int i=0; i<x_length; i++){
+		mem_free(x[i]);
+	}
+
 	
-	mem_print();
-	mem_free(x2);
-	mem_free(x4);
+	
+	// mem_free(x2);
+	// mem_free(x4);
 
-	x6 = mem_allocate(100);
+	// x6 = mem_allocate(100);
 
-	mem_print();
-	//mem_free(x2);
+	// mem_free(x1);
 	// mem_free(x3);
+	// mem_free(x5);
+	// mem_free(x6);
 
-	//mem_print();
+	gettimeofday(&endTime, NULL);
+	mem_print();
+
+	long seconds = endTime.tv_sec - startTime.tv_sec;
+	long mseconds = endTime.tv_usec - startTime.tv_usec;
+	long total = (seconds * 1000000) + mseconds;
+	printf("Allocation & Free took %ld microseconds\n", total);
 
 	return	0;
 }
